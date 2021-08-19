@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins="http://localhost:3000/")
 @RestController
@@ -63,6 +65,24 @@ public class EmployeeController {
 
         // return the Saved and Updated Employee to the client.
         return ResponseEntity.ok(updatedEmployee);
+    }
 
+    // Delete Employee Rest Api
+    // Returning a deleted Employee Map with status message and Boolean, because otherwise delete method does not return anything.
+    @DeleteMapping("/employees/{id}")
+    public ResponseEntity  <Map<String, Boolean>> deleteEmployee(@PathVariable Long id) {
+        // First Get the Existing employee by id.
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee does not exist with id:" + id));
+
+        // Pass Employee Object to the delete method.
+        // Delete JPA repository method will delete a particular record.
+        employeeRepository.delete(employee);
+
+        // Create a map message, to return the deleted message as a true.
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("deleted", Boolean.TRUE);
+
+        return ResponseEntity.ok(response);
     }
 }
