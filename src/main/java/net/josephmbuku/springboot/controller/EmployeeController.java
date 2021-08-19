@@ -29,12 +29,12 @@ public class EmployeeController {
         return employeeRepository.save(employee);
     }
 
-    // Get Employee by Id Rest Api
+    // Get Employee by id Rest Api
     @GetMapping("/employees/{id}")
     // Path Variable maps the id to the path.
     public ResponseEntity <Employee> getEmployeeById(@PathVariable Long id){
         // Create an employee object.
-        // Find By Id returns an optional. An optional has throw exception option.
+        // Find By id returns an optional. An optional has throw exception option.
         // Then throw an exception if record not found.
         // Use a lambda expression with the orElseThrow Exception.
         Employee employee = employeeRepository.findById(id)
@@ -42,5 +42,27 @@ public class EmployeeController {
 
         // Return Http Status.
         return ResponseEntity.ok(employee);
+    }
+
+    // Update Employee Rest Api
+    // Pass id as method argument as well as object of the Employee class.
+    @PutMapping("/employees/{id}")// Handles put request for update operations.
+    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails) {
+        // First Retrieve the existing employee from the database.
+        // Re-using the code to find employee by id, if record not found throws employee not found exception.
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee does not exist with id:" + id));
+
+        // Update the employee variable object with the employeeDetails request object.
+        employee.setFirstName(employeeDetails.getFirstName());
+        employee.setLastName(employeeDetails.getLastName());
+        employee.setEmailId(employeeDetails.getEmailId());
+
+        // Save the updated employee object to the database.
+        Employee updatedEmployee = employeeRepository.save(employee);
+
+        // return the Saved and Updated Employee to the client.
+        return ResponseEntity.ok(updatedEmployee);
+
     }
 }
